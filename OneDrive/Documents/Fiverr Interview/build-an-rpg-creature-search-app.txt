@@ -1,0 +1,202 @@
+** start of index.html **
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RPG Creature Finder</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>RPG Creature Finder</h1>
+    <form id="search-form">
+      <input id="search-input" type="text" required placeholder="Enter creature name or ID" />
+      <button type="submit" id="search-button">Search</button>
+    </form>
+    <div class="creature-info">
+      <div id="creature-name"></div>
+      <div id="creature-image"></div>
+      <div id="creature-id"></div>
+      <div id="weight"></div>
+      <div id="height"></div>
+      <div id="types"></div>
+      <div id="hp"></div>
+      <div id="attack"></div>
+      <div id="defense"></div>
+      <div id="special-attack"></div>
+      <div id="special-defense"></div>
+      <div id="speed"></div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+
+** end of index.html **
+
+** start of script.js **
+
+document.getElementById("search-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  clearUI();
+
+  const rawInput = document.getElementById("search-input").value.trim();
+  const input = rawInput.startsWith("#") ? rawInput.slice(1) : rawInput;
+
+  try {
+    const res = await fetch(`https://rpg-creature-api.freecodecamp.rocks/api/creature/${input}`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+
+    // Fill UI
+    document.getElementById("creature-name").textContent = data.name.toUpperCase();
+    document.getElementById("creature-id").textContent = `#${data.id}`;
+    document.getElementById("weight").textContent = String(data.weight);
+    document.getElementById("height").textContent = String(data.height);
+
+    const typesEl = document.getElementById("types");
+    typesEl.innerHTML = "";
+    data.types.forEach(type => {
+      const span = document.createElement("span");
+      span.textContent = type.name.toUpperCase();
+      typesEl.appendChild(span);
+    });
+
+    data.stats.forEach(stat => {
+      const el = document.getElementById(stat.name);
+      if (el) el.textContent = String(stat.base_stat);
+    });
+
+    document.getElementById("creature-image").innerHTML = ""; // optional
+  } catch {
+    alert("Creature not found");
+  }
+});
+
+function clearUI() {
+  const fields = [
+    "creature-name", "creature-id", "weight", "height", "types", "hp",
+    "attack", "defense", "special-attack", "special-defense", "speed", "creature-image"
+  ];
+
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (id === "types" || id === "creature-image") el.innerHTML = "";
+    else el.textContent = "";
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+** end of script.js **
+
+** start of styles.css **
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(to bottom, #222a35 0%, #5e6e87 100%);
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.container {
+  background: #292f38ee;
+  border-radius: 18px;
+  box-shadow: 0 10px 32px #0009;
+  margin-top: 40px;
+  padding: 2rem 2.5rem;
+  max-width: 420px;
+  width: 100%;
+}
+h1 {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.2rem;
+}
+#search-input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 7px;
+  border: none;
+  font-size: 1.1rem;
+  outline: none;
+}
+#search-button {
+  padding: 0.5rem 1.2rem;
+  background: #b03828;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#search-button:hover {
+  background: #f45b21;
+}
+.creature-info {
+  margin-top: 20px;
+  text-align: center;
+}
+#creature-image {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 10px;
+}
+#types {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+#types span {
+  background: #4b525c;
+  border-radius: 7px;
+  padding: 0.3em 0.8em;
+  font-weight: bold;
+  color: #fff;
+  font-size: 1rem;
+  border: 2px solid #fff2;
+}
+.creature-info > div {
+  margin: 3px 0;
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 1.2rem;
+  }
+  .creature-info > div {
+    font-size: 0.96rem;
+  }
+}
+
+
+** end of styles.css **
+

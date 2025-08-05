@@ -1,0 +1,148 @@
+** start of index.html **
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cash Register</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="register-container">
+    <h2>Cash Register</h2>
+    <label for="cash">Enter Cash:</label>
+    <input type="number" id="cash" placeholder="Enter amount" step="0.01" />
+    <button id="purchase-btn">Purchase</button>
+    <p id="change-due"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+** end of index.html **
+
+** start of script.js **
+
+let price = 19.5;
+let cid = [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0],
+           ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]];
+
+const currencyUnits = {
+  "PENNY": 0.01,
+  "NICKEL": 0.05,
+  "DIME": 0.10,
+  "QUARTER": 0.25,
+  "ONE": 1.00,
+  "FIVE": 5.00,
+  "TEN": 10.00,
+  "TWENTY": 20.00,
+  "ONE HUNDRED": 100.00
+};
+
+function formatDollar(amount) {
+  return `$${amount % 1 === 0
+    ? amount.toFixed(0)
+    : amount.toFixed(2).replace(/\.?0+$/, '')}`;
+}
+
+document.getElementById("purchase-btn").addEventListener("click", () => {
+  const cash = parseFloat(document.getElementById("cash").value);
+  const changeDueEl = document.getElementById("change-due");
+
+  if (isNaN(cash)) return;
+
+  if (cash < price) {
+    alert("Customer does not have enough money to purchase the item");
+    return;
+  }
+
+  if (cash === price) {
+    changeDueEl.textContent = "No change due - customer paid with exact cash";
+    return;
+  }
+
+  let expectedChange = +(cash - price).toFixed(2);
+  const totalCid = +cid.reduce((sum, [, amt]) => sum + amt, 0).toFixed(2);
+
+  // === 1. Check for CLOSED BEFORE trying to make change ===
+  if (expectedChange === totalCid) {
+    // List denominations with amt > 0, sorted from highest to lowest (as FCC expects)
+    let output = "Status: CLOSED";
+    const closedChange = [...cid]
+      .reverse()
+      .filter(([unit, amt]) => amt > 0)
+      .map(([unit, amt]) => `${unit}: ${formatDollar(amt)}`);
+    changeDueEl.textContent = `${output} ${closedChange.join(' ')}`;
+    return;
+  }
+
+  // === 2. Try to make change with greedy method for OPEN ===
+  let changeToGive = expectedChange;
+  const reversedCid = JSON.parse(JSON.stringify(cid)).reverse();
+
+  let changeArr = [];
+
+  for (let [unit, available] of reversedCid) {
+    const value = currencyUnits[unit];
+    let amount = 0;
+
+    while (changeToGive >= value && available >= value) {
+      changeToGive -= value;
+      changeToGive = +changeToGive.toFixed(2);
+      available -= value;
+      amount += value;
+    }
+
+    if (amount > 0) {
+      changeArr.push([unit, +amount.toFixed(2)]);
+    }
+  }
+
+  const returnedTotal = +changeArr.reduce((sum, [, amt]) => sum + amt, 0).toFixed(2);
+
+  if (returnedTotal < expectedChange) {
+    changeDueEl.textContent = "Status: INSUFFICIENT_FUNDS";
+  } else {
+    let output = "Status: OPEN";
+    const openChange = changeArr
+      .map(([unit, amt]) => `${unit}: ${formatDollar(amt)}`);
+    changeDueEl.textContent = `${output} ${openChange.join(' ')}`;
+  }
+});
+
+
+** end of script.js **
+
+** start of styles.css **
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f4f8;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-container {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+}
+
+input, button {
+  padding: 10px;
+  font-size: 1rem;
+  margin: 10px 5px 0 0;
+}
+
+#change-due {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+** end of styles.css **
+

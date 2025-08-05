@@ -1,0 +1,98 @@
+** start of index.html **
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palindrome Checker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Palindrome Checker</h1>
+    <input type="text" id="text-input" placeholder="Enter text here...">
+    <button id="check-btn">Check</button>
+    <p id="result"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
+
+** end of index.html **
+
+** start of styles.css **
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f6fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+  border: 2px solid #8c7ae6;
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+input {
+  padding: 0.5rem;
+  margin-top: 1rem;
+  width: 80%;
+  border: 1px solid #dcdde1;
+  border-radius: 5px;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #44bd32;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #4cd137;
+}
+
+#result {
+  margin-top: 1.5rem;
+  font-weight: bold;
+}
+
+** end of styles.css **
+
+** start of script.js **
+
+document.getElementById("check-btn").addEventListener("click", () => {
+  const input = document.getElementById("text-input").value;
+  const result = document.getElementById("result");
+
+  if (!input.trim()) {
+    alert("Please input a value.");
+    return;
+  }
+
+  const original = input;
+  const cleaned = input.toLowerCase().replace(/[^a-z0-9]/gi, "");
+  const reversed = cleaned.split("").reverse().join("");
+
+  if (cleaned === reversed) {
+    result.textContent = `${original} is a palindrome.`;
+  } else {
+    result.textContent = `${original} is not a palindrome.`;
+  }
+});
+
+** end of script.js **
+

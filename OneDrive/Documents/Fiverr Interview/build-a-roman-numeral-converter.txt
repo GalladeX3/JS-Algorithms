@@ -1,0 +1,134 @@
+** start of index.html **
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Roman Numeral Converter</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+
+<body>
+  <div class="converter-container">
+    <h1>Roman Numeral Converter</h1>
+    <input type="number" id="number" placeholder="Enter number between 1 and 3999"/>
+    <button id="convert-btn">Convert</button>
+    <p id="output"></p>
+    </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+** end of index.html **
+
+** start of styles.css **
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.converter-container {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  border: 2px solid #2f3640;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  max-width: 400px;
+}
+
+input {
+  padding: 0.5rem;
+  width: 80%;
+  margin-top: 1rem;
+  border-radius: 5px;
+  border: 1px solid #dcdde1;
+  font-size: 1rem;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #00a8ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0097e6;
+}
+
+#output {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+** end of styles.css **
+
+** start of script.js **
+
+const convertBtn = document.getElementById("convert-btn");
+const numberInput = document.getElementById("number");
+const output = document.getElementById("output");
+
+convertBtn.addEventListener("click", () => {
+  const num = parseInt(numberInput.value);
+
+  if (!numberInput.value.trim()) {
+    output.textContent = "Please enter a valid number";
+    return;
+  }
+
+  if (num < 1) {
+    output.textContent = "Please enter a number greater than or equal to 1";
+    return;
+  }
+
+  if (num > 3999) {
+    output.textContent = "Please enter a number less than or equal to 3999";
+    return;
+  }
+
+  // Convert number to Roman numerals //
+  const romanMap = [
+    { value: 1000, symbol: "M" },
+    { value: 900, symbol: "CM" },
+    { value: 500, symbol: "D" },
+    { value: 400, symbol: "CD" },
+    { value: 100, symbol: "C" },
+    { value: 90, symbol: "XC" },
+    { value: 50, symbol: "L" },
+    { value: 40, symbol: "XL" },
+    { value: 10, symbol: "X" },
+    { value: 9, symbol: "IX" },
+    { value: 5, symbol: "V" },
+    { value: 4, symbol: "IV" },
+    { value: 1, symbol: "I" }
+  ];
+
+  let result = "";
+  let current = num;
+
+  for (let i = 0; i < romanMap.length; i++) {
+    while (current >= romanMap[i].value) {
+      result += romanMap[i].symbol;
+      current -= romanMap[i].value;
+    }
+  }
+
+  output.textContent = result;
+});
+
+** end of script.js **
+
